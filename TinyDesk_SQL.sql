@@ -117,5 +117,7 @@ CREATE TABLE TICKET
 
 
 
-
-
+/*----------------------
+		TRIGGERS
+------------------------*/
+-- armar triggers para fecha de inicio (no sea inferior a la fecha actual)
