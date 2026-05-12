@@ -2,3 +2,53 @@
 --create database TinyDesk_SQL
 USE TinyDesk_SQL
 
+/*----------------------
+		TABLAS
+------------------------*/
+--CREACIÓN TABLA ÁREA
+CREATE TABLE AREA 
+(
+	Id INT PRIMARY KEY NOT NULL IDENTITY(1,1),
+	Nombre VARCHAR(30) NOT NULL UNIQUE
+)
+
+
+--CREACIÓN TABLA ROL
+CREATE TABLE ROL
+(
+	Id INT PRIMARY KEY NOT NULL IDENTITY(1,1),
+	Nombre VARCHAR(30) NOT NULL UNIQUE,
+	PermisoEscritura BIT NOT NULL
+)
+
+--CREACIÓN TABLA USUARIO
+CREATE TABLE 
+
+
+--CREACIÓN TABLA PROYECTO
+CREATE TABLE 
+
+
+--CREACIÓN TABLA SPRINT
+CREATE TABLE 
+
+
+--CREACIÓN TABLA TICKET
+CREATE TABLE 
+
+
+
+--CREACIÓN TABLA ESTADO
+CREATE TABLE 
+
+
+
+
+/*----------------------
+		VISTAS
+------------------------*/
+
+
+
+
+
