@@ -110,14 +110,29 @@ CREATE TABLE TICKET
 )
 
 
+/*----------------------
+		TRIGGERS
+------------------------*/
+-- armar triggers para fecha de inicio (no sea inferior a la fecha actual)
+GO
+
+CREATE TRIGGER tr_Proyecto_ValidarFechaInicio
+ON PROYECTO
+AFTER INSERT
+AS
+BEGIN
+	IF(
+		SELECT COUNT(*)
+		FROM inserted
+		WHERE FechaInicio < CAST(GETDATE() AS DATE)
+	) > 0
+	BEGIN
+	RAISERROR('La fecha de inicio del proyecto no puede ser anterior a la fecha actual.', 16, 1);
+	ROLLBACK TRANSACTION;
+	END
+END;
 
 /*----------------------
 		VISTAS
 ------------------------*/
 
-
-
-/*----------------------
-		TRIGGERS
-------------------------*/
--- armar triggers para fecha de inicio (no sea inferior a la fecha actual)
