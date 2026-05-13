@@ -1,7 +1,4 @@
---CREACIÓN BASE DE DATOS
-create database TinyDesk_SQL
-COLLATE Latin1_General_CI_AI
-USE TinyDesk_SQL
+USE TinyDesk_SQL;
 GO
 /*----------------------
 		TABLAS
@@ -27,10 +24,10 @@ CREATE TABLE USUARIO
 (
 	Id INT PRIMARY KEY NOT NULL IDENTITY(1,1),
 	NombreUsuario VARCHAR(30) NOT NULL UNIQUE,
-	Pass VARCHAR(20) NOT NULL,
+	PasswordHash VARCHAR(200) NOT NULL,
 	Nombre VARCHAR(30) NOT NULL,
 	Apellido VARCHAR(30) NOT NULL,
-	Activo BIT NOT NULL,
+	Activo BIT NOT NULL DEFAULT 1,
 	IdRol INT NOT NULL,
 	IdArea INT NOT NULL,
 
@@ -108,29 +105,7 @@ CREATE TABLE TICKET
 	FOREIGN KEY (IdEstado) REFERENCES ESTADO(Id),
 	FOREIGN KEY (IdSprint) REFERENCES SPRINT(Id)
 )
-
-
-/*----------------------
-		TRIGGERS
-------------------------*/
--- armar triggers para fecha de inicio (no sea inferior a la fecha actual)
 GO
-
-CREATE TRIGGER tr_Proyecto_ValidarFechaInicio
-ON PROYECTO
-AFTER INSERT
-AS
-BEGIN
-	IF(
-		SELECT COUNT(*)
-		FROM inserted
-		WHERE FechaInicio < CAST(GETDATE() AS DATE)
-	) > 0
-	BEGIN
-	RAISERROR('La fecha de inicio del proyecto no puede ser anterior a la fecha actual.', 16, 1);
-	ROLLBACK TRANSACTION;
-	END
-END;
 
 /*----------------------
 		VISTAS
