@@ -18,7 +18,7 @@ END;
 GO
 
 -- Valida que no se pueda modificar la fecha de inicio.
-CREATE TRIGGER tr_Proyecto_ValidarModificacionFechaInicio ON PROYECTO
+CREATE TRIGGER tr_Proyecto_InvalidarModificacionFechaInicio ON PROYECTO
 AFTER UPDATE
 AS
 BEGIN
