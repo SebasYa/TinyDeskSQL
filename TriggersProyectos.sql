@@ -5,10 +5,14 @@ CREATE TRIGGER tr_Proyecto_InvalidarModificacionFechaInicio ON PROYECTO
 AFTER UPDATE
 AS
 BEGIN
-	IF UPDATE(FechaInicio)
+	IF EXISTS (
+		SELECT 1
+		FROM inserted I
+		INNER JOIN deleted D ON D.Id = I.Id
+		WHERE I.FechaInicio <> D.FechaInicio
+	)
 	BEGIN
 		RAISERROR('La fecha de inicio del proyecto no puede ser modificada.', 16, 1);
 		ROLLBACK TRANSACTION;
 	END
 END;
-GO

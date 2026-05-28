@@ -40,10 +40,44 @@ GO
 CREATE TABLE ESTADO
 (
 	Id INT PRIMARY KEY NOT NULL IDENTITY(1,1),
-	Nombre VARCHAR(30) NOT NULL UNIQUE
+	Nombre VARCHAR(30) NOT NULL UNIQUE,
+	EsFinal BIT NOT NULL DEFAULT 0,
+	EsSistema BIT NOT NULL DEFAULT 0
 )
 GO
+------------------------------------------------------------------
+--Se insetran valores obligatorios de manera default.
+IF NOT EXISTS (
+	SELECT 1
+	FROM ESTADO
+	WHERE Nombre = 'Pendiente'
+)
+BEGIN
+	INSERT INTO ESTADO (Nombre, EsFinal, EsSistema)
+	VALUES ('Pendiente', 0, 1);
+END
 
+IF NOT EXISTS (
+	SELECT 1
+	FROM ESTADO
+	WHERE Nombre = 'En Progreso'
+)
+BEGIN
+	INSERT INTO ESTADO (Nombre, EsFinal, EsSistema)
+	VALUES ('En Progreso', 0, 1);
+END
+
+IF NOT EXISTS (
+	SELECT 1
+	FROM ESTADO
+	WHERE Nombre = 'Finalizado'
+)
+BEGIN
+	INSERT INTO ESTADO (Nombre, EsFinal, EsSistema)
+	VALUES ('Finalizado', 1, 1);
+END
+GO
+------------------------------------------------------------------
 --CREACION TABLA PRIORIDAD
 CREATE TABLE PRIORIDAD
 (
