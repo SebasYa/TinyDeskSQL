@@ -2,9 +2,9 @@ USE TinyDesk_SQL;
 GO
 
 -- No modificar estados que pertenecen al sistema de manera default.
-CREATE TRIGGER tr_Estado_NoModificarSistema
+CREATE TRIGGER tr_Estado_ImpedirModificarEliminarSistema
 ON ESTADO
-AFTER UPDATE
+AFTER UPDATE, DELETE
 AS
 BEGIN
 	IF EXISTS (
@@ -13,7 +13,7 @@ BEGIN
 		WHERE EsSistema = 1
 	)
 	BEGIN
-		RAISERROR('No se pueden modificar estados del sistema.', 16, 1);
+		RAISERROR('No se pueden modificar o eliminar estados del sistema.', 16, 1);
 		ROLLBACK TRANSACTION;
 		RETURN;
 	END;
