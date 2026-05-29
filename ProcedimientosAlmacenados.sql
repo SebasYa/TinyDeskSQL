@@ -47,3 +47,28 @@ AS BEGIN
     END;
 END
 GO
+
+-- Crear Sprint
+CREATE PROCEDURE Sp_CrearSprint(
+    @NumeroSprint INT,
+    @FechaInicio DATE,
+    @FechaFin DATE,
+    @Activo BIT,
+    @IdProyecto INT,
+    @IdArea INT
+)
+AS BEGIN
+    DECLARE @IdEstado INT;
+    SET @IdEstado = (SELECT Id FROM ESTADO WHERE Nombre = 'Pendiente');
+
+    IF @IdEstado IS NULL
+    BEGIN
+        RAISERROR('El estado "Pendiente" no existe en la base de datos.', 16, 1);
+        RETURN;
+    END
+
+    INSERT INTO SPRINT(NumeroSprint,FechaInicio ,FechaFin,Activo, IdProyecto,IdEstado,IdArea)
+    VALUES(@NumeroSprint,@FechaInicio,@FechaFin,@Activo,@IdProyecto,@IdEstado,@IdArea);
+
+END
+GO
