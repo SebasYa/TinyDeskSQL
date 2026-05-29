@@ -101,6 +101,35 @@ AS BEGIN
 END
 GO
 
+-- Rollbacks al reasignar usuario a un ticket
+CREATE TRIGGER tr_Ticket_ReasignarUsusario ON TICKET
+AFTER UPDATE
+AS BEGIN
+	IF EXISTS(
+		SELECT 1
+		FROM inserted I
+		LEFT JOIN Usuario AS U ON I.IdUsuario = U.Id
+		WHERE U.Id IS NOT NULL
+	)
+	BEGIN
+		RAISERROR('El Usuario asignado no existe.', 16, 1);
+		ROLLBACK TRANSACTION;
+		RETURN;
+	END
+
+	IF EXISTS(
+		SELECT 1
+		FROM inserted I
+		INNER JOIN Usuario AS U ON I.IdUsuario = U.Id
+		WHERE U.Activo = 0
+	)
+	BEGIN
+		RAISERROR('No se puede asignar un ticket a un Usuario inactivo.', 16, 1);
+		ROLLBACK TRANSACTION;
+		RETURN;
+	END
+END
+
 -- No permitir modificar ticket con un estado esFinal=1
 -- CREATE TRIGGER Tr_Ticket_ModificarTickerFinalizado ON ticket
 -- AFTER UPDATE
