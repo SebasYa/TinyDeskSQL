@@ -8,18 +8,26 @@ BEGIN
 	IF EXISTS (
 		SELECT I.Id
 		FROM inserted AS I
-		INNER JOIN SPRINT AS S ON S.Id = I.IdSprint
-		INNER JOIN PROYECTO AS P ON P.Id = S.IdProyecto
-		INNER JOIN ESTADO AS EstadoProyecto ON P.IdEstado = EstadoProyecto.Id
-		INNER JOIN ESTADO AS EstadoSprint ON S.IdEstado = EstadoSprint.Id
-		WHERE S.Activo = 0
-		OR P.Activo = 0
-        OR S.FechaFin IS NOT NULL
-		OR EstadoProyecto.EsFinal = 1
-		OR EstadoSprint.EsFinal = 1
+		LEFT JOIN ESTADO AS E ON I.IdEstado = E.Id
+		WHERE E.Id IS NULL
 	)
 	BEGIN
-		RAISERROR('No se puede crear un ticket relacionado a un sprint o proyecto inactivo o finalizado.', 16, 1);
+		RAISERROR('El estado asignado no existe.', 16, 1);
+		ROLLBACK TRANSACTION;
+		RETURN;
+	END
+
+	IF EXISTS (
+		SELECT I.Id
+		FROM inserted AS I
+		INNER JOIN SPRINT AS S ON S.Id = I.IdSprint
+		INNER JOIN ESTADO AS E ON S.IdEstado = E.Id
+		WHERE S.Activo = 0
+        OR S.FechaFin IS NOT NULL
+		OR E.EsFinal = 1
+	)
+	BEGIN
+		RAISERROR('No se puede crear un ticket relacionado a un sprint inactivo o finalizado.', 16, 1);
 		ROLLBACK TRANSACTION;
 		RETURN;
 	END
@@ -60,14 +68,25 @@ BEGIN
 		ROLLBACK TRANSACTION;
 		RETURN;
 	END
+
+	IF EXISTS (
+		SELECT I.Id
+		FROM inserted AS I
+		LEFT JOIN PRIORIDAD AS P ON I.IdPrioridad = P.Id
+		WHERE P.Id IS NULL
+	)
+	BEGIN
+		RAISERROR('La prioridad asignada no existe.', 16, 1);
+		ROLLBACK TRANSACTION;
+		RETURN;
+	END
 END
 GO
 
 -- Valida que no se pueda modificar la fecha de inicio.
 CREATE TRIGGER tr_Ticket_ModificarFechas ON TICKET
 AFTER UPDATE
-AS
-BEGIN
+AS BEGIN
     IF EXISTS (
 		SELECT 1
 		FROM inserted I
@@ -80,3 +99,21 @@ BEGIN
 		RETURN;
 	END
 END
+GO
+
+-- No permitir modificar ticket con un estado esFinal=1
+-- CREATE TRIGGER Tr_Ticket_ModificarTickerFinalizado ON ticket
+-- AFTER UPDATE
+-- AS BEGIN
+-- 	IF EXISTS(
+-- 		SELECT 1
+-- 		FROM deleted D
+-- 		INNER JOIN ESTADO E ON D.IdEstado = E.Id
+-- 		WHERE E.esFinal = 1
+-- 	)
+-- 	BEGIN
+-- 		RAISERROR('No se puede modificar un ticket finalizado.', 16, 1);
+-- 		ROLLBACK TRANSACTION;
+-- 		RETURN;
+-- 	END
+-- END

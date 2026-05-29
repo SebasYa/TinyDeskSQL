@@ -45,8 +45,9 @@ CREATE TABLE ESTADO
 	EsSistema BIT NOT NULL DEFAULT 0
 )
 GO
-------------------------------------------------------------------
---Se insetran valores obligatorios de manera default.
+/*-------------------------------------------------------------------------------
+				Se insetran filas obligatorias de manera default.
+---------------------------------------------------------------------------------*/
 IF NOT EXISTS (
 	SELECT 1
 	FROM ESTADO
@@ -77,7 +78,9 @@ BEGIN
 	VALUES ('Finalizado', 1, 1);
 END
 GO
-------------------------------------------------------------------
+/*-------------------------------------------------------------------------------
+---------------------------------------------------------------------------------*/
+
 --CREACION TABLA PRIORIDAD
 CREATE TABLE PRIORIDAD
 (
