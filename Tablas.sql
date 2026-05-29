@@ -18,6 +18,31 @@ CREATE TABLE ROL
 	Nombre VARCHAR(30) NOT NULL UNIQUE,
 	PermisoEscritura BIT NOT NULL
 )
+/*-------------------------------------------------------------------------------
+				Se insetran filas obligatorias de manera default.
+---------------------------------------------------------------------------------*/
+IF NOT EXISTS (
+	SELECT 1
+	FROM ROL
+	WHERE Nombre = 'Usuario'
+)
+BEGIN
+	INSERT INTO ROL (Nombre, PermisoEscritura)
+	VALUES ('Usuario', 0);
+END
+
+IF NOT EXISTS (
+	SELECT 1
+	FROM ROL
+	WHERE Nombre = 'Admin'
+)
+BEGIN
+	INSERT INTO ROL (Nombre, PermisoEscritura)
+	VALUES ('Admin', 1);
+END
+/*-------------------------------------------------------------------------------
+---------------------------------------------------------------------------------*/
+
 GO
 --CREACIÓN TABLA USUARIO
 CREATE TABLE USUARIO
