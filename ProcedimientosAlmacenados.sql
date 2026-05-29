@@ -72,3 +72,33 @@ AS BEGIN
 
 END
 GO
+
+--Reasignar Ticket
+CREATE PROCEDURE Sp_ReasignarTicket(
+    @IdTicket INT,
+    @IdUsuario INT
+)
+AS BEGIN
+    DECLARE @IdEstado BIT;
+    SET @IdEstado = (SELECT Id FROM ESTADO WHERE Id != 'Finalizado');
+    DECLARE @EsFinal BIT;
+    SET @EsFinal = (SELECT EsFinal FROM ESTADO WHERE Id = @IdEstado);
+
+    IF(@EsFinal IS NULL)
+    BEGIN
+        RAISERROR('El estado indicado no existe.', 16, 1);
+        RETURN;
+    END;
+
+    IF(@EsFinal = 0)
+    BEGIN
+        UPDATE Ticket SET IdUsuario = @IdUsuario WHERE Id = @IdTicket;
+    END;
+
+    IF(@EsFinal = 1)
+    BEGIN
+        RAISERROR('No se puede reasignar un ticket ya finalizado.', 16, 1);
+        RETURN;
+    END;
+END
+GO
