@@ -102,3 +102,26 @@ AS BEGIN
     END;
 END
 GO
+
+-- Crear Proyecto
+CREATE PROCEDURE Sp_CrearProyecto(
+    @Nombre VARCHAR(50),
+    @Descripcion VARCHAR(150),
+    @FechaInicio DATE,
+    @FechaFin DATE
+)
+AS BEGIN
+    DECLARE @IdEstado INT;
+    SET @IdEstado = (SELECT Id FROM ESTADO WHERE Nombre = 'Pendiente');
+
+    IF @IdEstado IS NULL
+    BEGIN
+        RAISERROR('El estado es inválido.', 16, 1);
+        RETURN;
+    END
+
+    INSERT INTO Proyecto(Nombre, Descripcion,FechaInicio ,FechaFin,Activo,IdEstado)
+    VALUES(@Nombre,@Descripcion,@FechaInicio,@FechaFin,1,@IdEstado);
+
+END
+GO
