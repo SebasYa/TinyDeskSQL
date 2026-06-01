@@ -125,3 +125,31 @@ AS BEGIN
 
 END
 GO
+
+-- Cerrar Ticket
+CREATE PROCEDURE Sp_CerrarTicket(
+    @IdTicket INT
+)
+AS BEGIN
+    DECLARE @IdEstado INT;
+    DECLARE @IdEstadoActual INT;
+    SET @IdEstado = (SELECT Id FROM ESTADO WHERE Nombre = 'Finalizado');
+    IF @IdEstado IS NULL
+    BEGIN
+        RAISERROR('No existe el estado Finalizado.',16,1);
+        RETURN;
+    END
+    SET @IdEstadoActual = (SELECT IdEstado FROM Ticket WHERE Id = @IdTicket);
+        IF @IdEstadoActual IS NULL
+    BEGIN
+        RAISERROR('El ticket no existe.',16,1);
+        RETURN;
+    END
+    IF(@IdEstado = @IdEstadoActual)
+    BEGIN
+        RAISERROR('El ticket fue finalizado anteriormente.', 16, 1);
+        RETURN;
+    END;
+    UPDATE Ticket SET IdEstado = @IdEstado WHERE Id = @IdTicket;
+END
+GO
