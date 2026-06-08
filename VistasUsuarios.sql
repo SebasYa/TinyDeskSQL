@@ -34,6 +34,6 @@ AS
 SELECT
     *
 FROM vw_Usuarios_Detallados
-WHERE UsuarioActivo = 1;
+WHERE Estado = 1;
 GO
 
