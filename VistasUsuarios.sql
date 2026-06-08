@@ -36,4 +36,3 @@ SELECT
 FROM vw_Usuarios_Detallados
 WHERE Estado = 1;
 GO
-

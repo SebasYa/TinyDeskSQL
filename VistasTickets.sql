@@ -36,8 +36,7 @@ SELECT
     U.Activo AS [Usuario Activo],
     AUsuario.Nombre AS [Area Usuario],
     R.Nombre AS [Rol Usuario],
-
-    S.NumeroSprint AS [Sprint Numero],
+    S.Numero AS [Sprint Numero],
     S.Activo AS SprintActivo,
 
     PR.Nombre AS Proyecto,
@@ -55,3 +54,5 @@ INNER JOIN AREA AS AUsuario ON U.IdArea = AUsuario.Id
 INNER JOIN SPRINT AS S ON T.IdSprint = S.Id
 INNER JOIN PROYECTO AS PR ON S.IdProyecto = PR.Id;
 GO
+
+select * from vw_Tickets_Detallados;
