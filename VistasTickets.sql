@@ -55,3 +55,36 @@ INNER JOIN AREA AS AUsuario ON U.IdArea = AUsuario.Id
 INNER JOIN SPRINT AS S ON T.IdSprint = S.Id
 INNER JOIN PROYECTO AS PR ON S.IdProyecto = PR.Id;
 GO
+
+
+-- Vista de tickets pendientes 
+/*Esta vista mostrará únicamente los tickets que todavía no fueron finalizados.
+Será útil para representar un tablero de trabajo donde se visualicen las tareas
+pendientes o en curso.*/
+
+CREATE VIEW vw_Tickets_pendientes
+AS
+SELECT
+    T.Id AS [Ticket ID],
+    S.NumeroSprint AS [Numero Sprint],
+    T.FechaInicio,
+    T.FechaFin,
+    DATEDIFF(DAY, T.FechaInicio, T.FechaFin) AS [Dias Transcurridos],
+    E.Nombre AS Estado,
+    P.Nombre AS Proyecto,
+    A.Nombre AS Area,
+    PRI.Nombre AS Prioridad,
+    CASE
+        WHEN T.Activo = 1 THEN 'Activo'
+        ELSE 'Inactivo'
+    END AS Activo
+
+FROM TICKET AS T
+INNER JOIN ESTADO AS E ON T.IdEstado = E.Id
+INNER JOIN SPRINT AS S ON T.IdSprint = S.Id
+INNER JOIN PROYECTO AS P ON S.IdProyecto = P.Id
+INNER JOIN AREA AS A ON S.IdArea = A.Id
+INNER JOIN USUARIO AS U ON T.IdUsuario = U.Id
+INNER JOIN PRIORIDAD AS PRI ON T.IdPrioridad = PRI.Id
+WHERE E.EsFinal != 1 
+GO

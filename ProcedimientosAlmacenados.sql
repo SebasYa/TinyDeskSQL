@@ -73,7 +73,7 @@ AS BEGIN
 END
 GO
 
---Reasignar Ticket
+--Reasignar Ticket  (REVISAR y modificar)
 CREATE PROCEDURE Sp_ReasignarTicket(
     @IdTicket INT,
     @IdUsuario INT
@@ -153,3 +153,9 @@ AS BEGIN
     UPDATE Ticket SET IdEstado = @IdEstado WHERE Id = @IdTicket;
 END
 GO
+
+
+---FALTAN ALGUN SP DE REPORTE---
+--EJEMPLO TICKET COMPLETADO POR USUARIO
+--TICKETS CERRADOS
+--SPRINTS COMPLETADOS POR AREA
