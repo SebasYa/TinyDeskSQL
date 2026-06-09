@@ -36,8 +36,7 @@ SELECT
     U.Activo AS [Usuario Activo],
     AUsuario.Nombre AS [Area Usuario],
     R.Nombre AS [Rol Usuario],
-
-    S.NumeroSprint AS [Sprint Numero],
+    S.Numero AS [Sprint Numero],
     S.Activo AS SprintActivo,
 
     PR.Nombre AS Proyecto,

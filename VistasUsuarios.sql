@@ -36,7 +36,3 @@ SELECT
 FROM vw_Usuarios_Detallados
 WHERE Estado = 1;
 GO
-
-select * from vw_Usuarios_Detallados
-select * from vw_Usuarios_Activos
-
