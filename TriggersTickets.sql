@@ -102,14 +102,14 @@ END
 GO
 
 -- Rollbacks al reasignar usuario a un ticket
-CREATE TRIGGER tr_Ticket_ReasignarUsusario ON TICKET
+CREATE TRIGGER tr_Ticket_ReasignarUsuario ON TICKET
 AFTER UPDATE
 AS BEGIN
 	IF EXISTS(
 		SELECT 1
 		FROM inserted I
 		LEFT JOIN Usuario AS U ON I.IdUsuario = U.Id
-		WHERE U.Id IS NOT NULL
+		WHERE U.Id IS NULL
 	)
 	BEGIN
 		RAISERROR('El Usuario asignado no existe.', 16, 1);
