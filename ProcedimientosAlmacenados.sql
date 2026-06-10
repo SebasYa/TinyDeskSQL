@@ -67,7 +67,7 @@ AS BEGIN
         RETURN;
     END
 
-    INSERT INTO SPRINT(NumeroSprint,FechaInicio ,FechaFin,Activo, IdProyecto,IdEstado,IdArea)
+    INSERT INTO SPRINT(Numero,FechaInicio ,FechaFin,Activo, IdProyecto,IdEstado,IdArea)
     VALUES(@NumeroSprint,@FechaInicio,@FechaFin,@Activo,@IdProyecto,@IdEstado,@IdArea);
 
 END
@@ -116,7 +116,7 @@ AS BEGIN
 
     IF @IdEstado IS NULL
     BEGIN
-        RAISERROR('El estado es inválido.', 16, 1);
+        RAISERROR('El estado es invï¿½lido.', 16, 1);
         RETURN;
     END
 

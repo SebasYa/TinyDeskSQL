@@ -7,7 +7,7 @@ CREATE VIEW vw_Sprints_detallados
 AS
 SELECT
     S.Id AS [SPRINT ID],
-    S.NumeroSprint AS [Numero Sprint],
+    S.Numero AS [Numero Sprint],
     S.FechaInicio,
     S.FechaFin,
     DATEDIFF(DAY, S.FechaInicio, S.FechaFin) AS [Dias Transcurridos],
