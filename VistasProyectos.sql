@@ -5,7 +5,7 @@ SELECT P.Nombre, P.Descripcion,P.FechaInicio,P.FechaFin,P.Activo, E.Nombre AS Es
 FROM PROYECTO AS P
 INNER JOIN ESTADO AS E
 ON P.IdEstado = E.Id;
-
+GO
 
 CREATE VIEW vw_ProyectosActivos AS
 SELECT * FROM vw_ProyectoEstado

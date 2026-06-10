@@ -48,9 +48,8 @@ AS BEGIN
 END
 GO
 
--- Crear Sprint
+-- Crear Sprint.  CAMBIO -> NUMERO DE SPRINT SE GENERA AUTOMATICAMENTE SEGUN EL PROYECTO: COUNT + 1 WHERE IDPROYECTO=@ID
 CREATE PROCEDURE Sp_CrearSprint(
-    @NumeroSprint INT,
     @FechaInicio DATE,
     @FechaFin DATE,
     @Activo BIT,
@@ -66,10 +65,13 @@ AS BEGIN
         RAISERROR('El estado "Pendiente" no existe en la base de datos.', 16, 1);
         RETURN;
     END
-
+    SET @NumeroSprint = (
+        SELECT COUNT(*) + 1
+        FROM SPRINT
+        WHERE IdProyecto = @IdProyecto
+    )
     INSERT INTO SPRINT(Numero,FechaInicio ,FechaFin,Activo, IdProyecto,IdEstado,IdArea)
     VALUES(@NumeroSprint,@FechaInicio,@FechaFin,@Activo,@IdProyecto,@IdEstado,@IdArea);
-
 END
 GO
 
