@@ -65,7 +65,7 @@ CREATE VIEW vw_Tickets_pendientes
 AS
 SELECT
     T.Id AS [Ticket ID],
-    S.NumeroSprint AS [Numero Sprint],
+    S.Numero AS [Numero Sprint],
     T.FechaInicio,
     T.FechaFin,
     DATEDIFF(DAY, T.FechaInicio, T.FechaFin) AS [Dias Transcurridos],

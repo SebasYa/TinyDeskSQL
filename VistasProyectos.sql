@@ -1,4 +1,6 @@
 ---------------Vistas Proyectos---------------------
+USE TinyDesk_SQL;
+GO
 
 CREATE VIEW vw_ProyectoEstado AS
 SELECT P.Nombre, P.Descripcion,P.FechaInicio,P.FechaFin,P.Activo, E.Nombre AS Estado
@@ -10,3 +12,5 @@ GO
 CREATE VIEW vw_ProyectosActivos AS
 SELECT * FROM vw_ProyectoEstado
 WHERE Activo = 1;
+GO
+

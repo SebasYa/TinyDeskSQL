@@ -105,6 +105,20 @@ GO
 CREATE TRIGGER tr_Ticket_ReasignarUsuario ON TICKET
 AFTER UPDATE
 AS BEGIN
+	IF EXISTS (
+        SELECT 1
+        FROM inserted AS I
+        INNER JOIN deleted AS D ON I.Id = D.Id
+        INNER JOIN ESTADO AS E ON D.IdEstado = E.Id
+        WHERE I.IdUsuario <> D.IdUsuario
+          AND E.EsFinal = 1
+    )
+    BEGIN
+        RAISERROR('No se puede reasignar un ticket ya finalizado.', 16, 1);
+        ROLLBACK TRANSACTION;
+        RETURN;
+    END;
+
 	IF EXISTS(
 		SELECT 1
 		FROM inserted I
@@ -128,7 +142,21 @@ AS BEGIN
 		ROLLBACK TRANSACTION;
 		RETURN;
 	END
+
+	IF EXISTS (
+        SELECT 1
+        FROM inserted AS I
+        INNER JOIN USUARIO AS U ON I.IdUsuario = U.Id
+        INNER JOIN SPRINT AS S ON I.IdSprint = S.Id
+        WHERE U.IdArea <> S.IdArea
+    )
+    BEGIN
+        RAISERROR('No se puede asignar un ticket a un usuario de un área distinta a la del sprint.', 16, 1);
+        ROLLBACK TRANSACTION;
+        RETURN;
+    END;
 END
+GO
 
 -- No permitir modificar ticket con un estado esFinal=1
 -- CREATE TRIGGER Tr_Ticket_ModificarTickerFinalizado ON ticket
