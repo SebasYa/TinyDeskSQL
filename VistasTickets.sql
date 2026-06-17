@@ -55,7 +55,6 @@ INNER JOIN SPRINT AS S ON T.IdSprint = S.Id
 INNER JOIN PROYECTO AS PR ON S.IdProyecto = PR.Id;
 GO
 
-
 -- Vista de tickets pendientes 
 /*Esta vista mostrará únicamente los tickets que todavía no fueron finalizados.
 Será útil para representar un tablero de trabajo donde se visualicen las tareas
@@ -87,3 +86,4 @@ INNER JOIN USUARIO AS U ON T.IdUsuario = U.Id
 INNER JOIN PRIORIDAD AS PRI ON T.IdPrioridad = PRI.Id
 WHERE E.EsFinal != 1 
 GO
+
