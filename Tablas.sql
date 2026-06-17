@@ -171,8 +171,3 @@ CREATE TABLE TICKET
 	FOREIGN KEY (IdSprint) REFERENCES SPRINT(Id)
 )
 GO
-
-/*----------------------
-		VISTAS
-------------------------*/
-
