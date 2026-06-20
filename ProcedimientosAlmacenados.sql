@@ -234,7 +234,7 @@ GO
 --SPRINTS COMPLETADOS POR AREA
 
 --SP REPORTE TICKET-USUARIO
-CREATE PROCEDURE Sp_ReporteTicketsUsuario
+ALTER PROCEDURE Sp_ReporteTicketsUsuario_VS_Area
 (
     @IdUsuario INT
 )
@@ -251,10 +251,10 @@ BEGIN
     END;
 
     SELECT
-        A.Nombre AS Area,
         U.Id AS IdUsuario,
         U.Apellido + ', ' + U.Nombre AS NombreCompleto,
         U.NombreUsuario AS Alias,
+        A.Nombre AS Area,
         R.Nombre AS Rol,
 
         COUNT(T.Id) AS TotalTickets,
@@ -298,34 +298,30 @@ BEGIN
     FROM USUARIO AS U
     INNER JOIN AREA AS A ON U.IdArea = A.Id
     INNER JOIN ROL AS R ON U.IdRol = R.Id
-    LEFT JOIN TICKET AS T ON T.IdUsuario = U.Id
+    LEFT JOIN TICKET AS T ON T.IdUsuario = U.Id AND T.Activo = 1
     LEFT JOIN ESTADO AS E ON T.IdEstado = E.Id
 
-    INNER JOIN (
-        SELECT
-            Datos.IdArea,
-            AVG(CAST(Datos.TotalTickets AS DECIMAL(10,2))) AS PromedioTicketsArea,
-            AVG(CAST(Datos.TicketsFinalizados AS DECIMAL(10,2))) AS PromedioFinalizadosArea
-        FROM (
-            SELECT
-                U2.IdArea,
-                U2.Id AS IdUsuario,
-                COUNT(T2.Id) AS TotalTickets,
-                SUM(
-                    CASE
-                        WHEN E2.EsFinal = 1 THEN 1
-                        ELSE 0
-                    END
-                ) AS TicketsFinalizados
-            FROM USUARIO AS U2
-            LEFT JOIN TICKET AS T2 ON T2.IdUsuario = U2.Id
-            LEFT JOIN ESTADO AS E2 ON T2.IdEstado = E2.Id
-            GROUP BY
-                U2.IdArea,
-                U2.Id
-        ) AS Datos
-        GROUP BY Datos.IdArea
-    ) AS PA ON PA.IdArea = U.IdArea
+    INNER JOIN (SELECT U3.IdArea, 
+                       CAST(
+                            COUNT(T3.Id) * 1.0 / COUNT(DISTINCT U3.Id)
+                            AS DECIMAL(10,2)
+                        ) AS PromedioTicketsArea,
+                        CAST(
+                            CASE
+                                WHEN COUNT(T3.Id) = 0 THEN 0
+                                ELSE SUM(
+                                    CASE
+                                        WHEN E3.EsFinal = 1 THEN 1
+                                        ELSE 0
+                                    END) * 1.0 / COUNT(T3.Id)
+                        END
+                        AS DECIMAL(10,2)
+                        ) AS PromedioFinalizadosArea
+            FROM USUARIO AS U3
+            LEFT JOIN TICKET AS T3 ON T3.IdUsuario = U3.Id AND T3.Activo = 1
+            LEFT JOIN ESTADO AS E3 ON T3.IdEstado = E3.Id
+            GROUP BY U3.IdArea
+        ) AS PA ON PA.IdArea = U.IdArea
 
     WHERE U.Id = @IdUsuario
     GROUP BY
