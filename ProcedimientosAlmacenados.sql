@@ -234,7 +234,7 @@ GO
 --SPRINTS COMPLETADOS POR AREA
 
 --SP REPORTE TICKET-USUARIO
-ALTER PROCEDURE Sp_ReporteTicketsUsuario_VS_Area
+CREATE PROCEDURE Sp_ReporteTicketsUsuario_VS_Area
 (
     @IdUsuario INT
 )
