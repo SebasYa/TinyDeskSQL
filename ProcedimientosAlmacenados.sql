@@ -199,40 +199,6 @@ AS BEGIN
 END
 GO
 
--- Cerrar Ticket
--- CREATE PROCEDURE Sp_CerrarTicket(
---     @IdTicket INT
--- )
--- AS BEGIN
---     DECLARE @IdEstado INT;
---     DECLARE @IdEstadoActual INT;
---     SET @IdEstado = (SELECT Id FROM ESTADO WHERE Nombre = 'Finalizado');
---     IF @IdEstado IS NULL
---     BEGIN
---         RAISERROR('No existe el estado Finalizado.',16,1);
---         RETURN;
---     END
---     SET @IdEstadoActual = (SELECT IdEstado FROM Ticket WHERE Id = @IdTicket);
---         IF @IdEstadoActual IS NULL
---     BEGIN
---         RAISERROR('El ticket no existe.',16,1);
---         RETURN;
---     END
---     IF(@IdEstado = @IdEstadoActual)
---     BEGIN
---         RAISERROR('El ticket fue finalizado anteriormente.', 16, 1);
---         RETURN;
---     END;
---     UPDATE Ticket SET IdEstado = @IdEstado, FechaFin = CAST(GETDATE() AS DATE) WHERE Id = @IdTicket;
--- END
--- GO
-
-
----FALTAN ALGUN SP DE REPORTE---
---EJEMPLO TICKET COMPLETADO POR USUARIO
---TICKETS CERRADOS
---SPRINTS COMPLETADOS POR AREA
-
 --SP REPORTE TICKET-USUARIO
 CREATE PROCEDURE Sp_ReporteTicketsUsuario_VS_Area
 (
@@ -300,28 +266,7 @@ BEGIN
     INNER JOIN ROL AS R ON U.IdRol = R.Id
     LEFT JOIN TICKET AS T ON T.IdUsuario = U.Id AND T.Activo = 1
     LEFT JOIN ESTADO AS E ON T.IdEstado = E.Id
-
-    INNER JOIN (SELECT U3.IdArea, 
-                       CAST(
-                            COUNT(T3.Id) * 1.0 / COUNT(DISTINCT U3.Id)
-                            AS DECIMAL(10,2)
-                        ) AS PromedioTicketsArea,
-                        CAST(
-                            CASE
-                                WHEN COUNT(T3.Id) = 0 THEN 0
-                                ELSE SUM(
-                                    CASE
-                                        WHEN E3.EsFinal = 1 THEN 1
-                                        ELSE 0
-                                    END) * 1.0 / COUNT(T3.Id)
-                        END
-                        AS DECIMAL(10,2)
-                        ) AS PromedioFinalizadosArea
-            FROM USUARIO AS U3
-            LEFT JOIN TICKET AS T3 ON T3.IdUsuario = U3.Id AND T3.Activo = 1
-            LEFT JOIN ESTADO AS E3 ON T3.IdEstado = E3.Id
-            GROUP BY U3.IdArea
-        ) AS PA ON PA.IdArea = U.IdArea
+    INNER JOIN vw_PromedioTicketsArea AS PA ON PA.IdArea = U.IdArea
 
     WHERE U.Id = @IdUsuario
     GROUP BY
@@ -335,3 +280,47 @@ BEGIN
         PA.PromedioFinalizadosArea;
 END;
 GO
+
+-- CREATE VIEW vw_PromedioTicketsArea
+-- AS SELECT U.Id,
+
+--           CAST(
+--             COUNT(T.Id) * 1.0 / COUNT(DISTINCT U.Id)
+--             AS DECIMAL(10, 2)
+--           ) AS PromedioTicketsArea,
+
+--           CAST(
+--             CASE 
+--                 WHEN COUNT(T.Id) = 0 THEN 0
+--                 ELSE SUM(
+--                     CASE
+--                         WHEN E.EsFinal = 1 THEN 1
+--                         ELSE 0
+--                     END
+--                 ) * 1.0 / COUNT(T.Id)
+--             END
+--             AS DECIMAL(10, 2)
+--           ) AS PromedioFinalizadosArea
+
+-- FROM Usuario AS U
+-- LEFT JOIN Ticket AS T ON T.IdUsuario = U.Id AND T.Activo = 1
+-- LEFT JOIN Estado AS E ON E.Id = T.IdEstado
+-- GROUP BY U.IdArea;
+-- GO
+
+
+-- Ex SP y comprobacion. 
+DECLARE @IdSebas INT = (
+    SELECT Id from Usuario where NombreUsuario='SebasYanni'
+)
+EXEC Sp_ReporteTicketsUsuario_VS_Area @IdUsuario = @IdSebas
+GO
+
+SELECT COUNT(U.id) as CantidadUsuariosBackend from Usuario U INNER JOIN AREA A ON U.IdArea = A.id AND A.Nombre = 'Backend';
+
+SELECT COUNT(T.Id) as CantidadTickerBackend FROM TICKET T INNER JOIN SPRINT S ON T.IdSprint = S.Id AND S.IdArea = 1;
+
+SELECT COUNT(T.Id) as CantidadTickerFinalizadoBackend FROM TICKET T INNER JOIN SPRINT S ON T.IdSprint = S.Id 
+                                                                    INNER JOIN Estado E ON T.IdEstado = E.Id
+                                                                            AND S.IdArea = 1
+                                                                            AND E.EsFinal = 1;

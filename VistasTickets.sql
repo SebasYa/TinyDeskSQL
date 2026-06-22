@@ -87,3 +87,30 @@ INNER JOIN PRIORIDAD AS PRI ON T.IdPrioridad = PRI.Id
 WHERE E.EsFinal != 1 
 GO
 
+-- Vista promedioTicketsArea
+CREATE VIEW vw_PromedioTicketsArea
+AS SELECT U.Id,
+
+          CAST(
+            COUNT(T.Id) * 1.0 / COUNT(DISTINCT U.Id)
+            AS DECIMAL(10, 2)
+          ) AS PromedioTicketsArea,
+
+          CAST(
+            CASE 
+                WHEN COUNT(T.Id) = 0 THEN 0
+                ELSE SUM(
+                    CASE
+                        WHEN E.EsFinal = 1 THEN 1
+                        ELSE 0
+                    END
+                ) * 1.0 / COUNT(T.Id)
+            END
+            AS DECIMAL(10, 2)
+          ) AS PromedioFinalizadosArea
+
+FROM Usuario AS U
+LEFT JOIN Ticket AS T ON T.IdUsuario = U.Id AND T.Activo = 1
+LEFT JOIN Estado AS E ON E.Id = T.IdEstado
+GROUP BY U.IdArea;
+GO
