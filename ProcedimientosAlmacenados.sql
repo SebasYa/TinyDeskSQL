@@ -200,7 +200,7 @@ END
 GO
 
 --SP REPORTE TICKET-USUARIO
-CREATE PROCEDURE Sp_ReporteTicketsUsuario_VS_Area
+CREATE OR ALTER PROCEDURE Sp_ReporteTicketsUsuario_VS_Area
 (
     @IdUsuario INT
 )
@@ -266,7 +266,7 @@ BEGIN
     INNER JOIN ROL AS R ON U.IdRol = R.Id
     LEFT JOIN TICKET AS T ON T.IdUsuario = U.Id AND T.Activo = 1
     LEFT JOIN ESTADO AS E ON T.IdEstado = E.Id
-    INNER JOIN vw_PromedioTicketsArea AS PA ON PA.IdArea = U.IdArea
+    INNER JOIN vw_PromedioTicketsArea AS PA ON PA.IdArea = U.IdArea   -->> vista en VistasTickets.sql
 
     WHERE U.Id = @IdUsuario
     GROUP BY
@@ -280,47 +280,3 @@ BEGIN
         PA.PromedioFinalizadosArea;
 END;
 GO
-
--- CREATE VIEW vw_PromedioTicketsArea
--- AS SELECT U.Id,
-
---           CAST(
---             COUNT(T.Id) * 1.0 / COUNT(DISTINCT U.Id)
---             AS DECIMAL(10, 2)
---           ) AS PromedioTicketsArea,
-
---           CAST(
---             CASE 
---                 WHEN COUNT(T.Id) = 0 THEN 0
---                 ELSE SUM(
---                     CASE
---                         WHEN E.EsFinal = 1 THEN 1
---                         ELSE 0
---                     END
---                 ) * 1.0 / COUNT(T.Id)
---             END
---             AS DECIMAL(10, 2)
---           ) AS PromedioFinalizadosArea
-
--- FROM Usuario AS U
--- LEFT JOIN Ticket AS T ON T.IdUsuario = U.Id AND T.Activo = 1
--- LEFT JOIN Estado AS E ON E.Id = T.IdEstado
--- GROUP BY U.IdArea;
--- GO
-
-
--- Ex SP y comprobacion. 
-DECLARE @IdSebas INT = (
-    SELECT Id from Usuario where NombreUsuario='SebasYanni'
-)
-EXEC Sp_ReporteTicketsUsuario_VS_Area @IdUsuario = @IdSebas
-GO
-
-SELECT COUNT(U.id) as CantidadUsuariosBackend from Usuario U INNER JOIN AREA A ON U.IdArea = A.id AND A.Nombre = 'Backend';
-
-SELECT COUNT(T.Id) as CantidadTickerBackend FROM TICKET T INNER JOIN SPRINT S ON T.IdSprint = S.Id AND S.IdArea = 1;
-
-SELECT COUNT(T.Id) as CantidadTickerFinalizadoBackend FROM TICKET T INNER JOIN SPRINT S ON T.IdSprint = S.Id 
-                                                                    INNER JOIN Estado E ON T.IdEstado = E.Id
-                                                                            AND S.IdArea = 1
-                                                                            AND E.EsFinal = 1;

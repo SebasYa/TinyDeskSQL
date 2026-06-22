@@ -88,8 +88,8 @@ WHERE E.EsFinal != 1
 GO
 
 -- Vista promedioTicketsArea
-CREATE VIEW vw_PromedioTicketsArea
-AS SELECT U.Id,
+CREATE OR ALTER VIEW vw_PromedioTicketsArea
+AS SELECT U.IdArea,
 
           CAST(
             COUNT(T.Id) * 1.0 / COUNT(DISTINCT U.Id)
